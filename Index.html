@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>قائمة معازيم العرس 💐</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Cairo',sans-serif;background:#fdf6ef;direction:rtl;}
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button{opacity:1;}
+    ::-webkit-scrollbar{width:6px;}
+    ::-webkit-scrollbar-track{background:#f5ece2;}
+    ::-webkit-scrollbar-thumb{background:#d4a882;border-radius:3px;}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+const STORAGE_KEY = "wedding-guests-hala-v3";
+
+const INITIAL_DATA = [
+  { id:"s1", title:"الدبوسية 💚", subgroups:[
+    { id:"sg1-1", title:"عائلة أسامة", entries:[
+      {id:"1",type:"i",name:"ميسم",status:null},
+      {id:"2",type:"i",name:"ريم",status:null},
+      {id:"3",type:"i",name:"جنى",status:null},
+      {id:"4",type:"i",name:"زوجة بشر",status:null},
+      {id:"5",type:"i",name:"زوجة رامي",status:null},
+    ]},
+    { id:"sg1-2", title:"بيت كمال", entries:[
+      {id:"6",type:"i",name:"سمية",status:null},
+      {id:"7",type:"i",name:"لينا",status:null},
+      {id:"8",type:"i",name:"لمى",status:null},
+      {id:"9",type:"i",name:"رنا",status:null},
+    ]},
+    { id:"sg1-3", title:"حجو رفاعي", entries:[
+      {id:"10",type:"i",name:"سهام",status:null},
+      {id:"11",type:"i",name:"رانيا",status:null},
+      {id:"12",type:"i",name:"راما",status:null},
+      {id:"13",type:"i",name:"زوجة أمين",status:null},
+    ]},
+    { id:"sg1-4", title:"عائلة طاهر", entries:[
+      {id:"14",type:"i",name:"ثناء",status:null},
+      {id:"15",type:"i",name:"زوجة وائل",status:null},
+      {id:"16",type:"i",name:"زوجة لؤي",status:null},
+      {id:"17",type:"i",name:"زوجة باسل",status:null},
+      {id:"18",type:"i",name:"رولا",status:null},
+    ]},
+    { id:"sg1-5", title:"عائلة هيثم", entries:[
+      {id:"19",type:"i",name:"رولانا",status:null},
+      {id:"20",type:"i",name:"روبا",status:null},
+      {id:"21",type:"i",name:"زوجة مازن",status:null},
+    ]},
+    { id:"sg1-6", title:"عائلة أيمن", entries:[
+      {id:"22",type:"i",name:"ليلى",status:null},
+      {id:"23",type:"i",name:"ناديا",status:null},
+      {id:"24",type:"i",name:"مي",status:null},
+      {id:"25",type:"i",name:"سارة",status:null},
+      {id:"26",type:"i",name:"زوجة أحمد",status:null},
+      {id:"27",type:"i",name:"زوجة أشرف",status:null},
+      {id:"28",type:"i",name:"خطيبة أيهم",status:null},
+    ]},
+    { id:"sg1-7", title:"بيت أحمى ماهر", entries:[
+      {id:"29",type:"i",name:"سوسن",status:null},
+      {id:"30",type:"i",name:"سارة",status:null},
+      {id:"31",type:"i",name:"نور",status:null},
+      {id:"32",type:"i",name:"خطيبة عادل",status:null},
+    ]},
+    { id:"sg1-8", title:"بيت أحمى هادي", entries:[
+      {id:"33",type:"i",name:"هدى",status:null},
+      {id:"34",type:"i",name:"بيان",status:null},
+      {id:"35",type:"i",name:"بدور",status:null},
+      {id:"36",type:"i",name:"زوجة أخ بيان",status:null},
+    ]},
+    { id:"sg1-9", title:"دبوسية", entries:[
+      {id:"37",type:"i",name:"رفاه",status:null},
+      {id:"38",type:"i",name:"رندة",status:null},
+      {id:"39",type:"i",name:"نهال",status:null},
+      {id:"40",type:"g",name:"زوجات أخواتها",max:2,count:null},
+      {id:"41",type:"i",name:"خيرية",status:null},
+      {id:"42",type:"i",name:"وفاء",status:null},
+      {id:"43",type:"i",name:"روعة",status:null},
+    ]},
+  ]},
+  { id:"s2", title:"عيلة الجفان", subgroups:[
+    { id:"sg2-1", title:"هيثم", entries:[
+      {id:"44",type:"i",name:"رودة",status:null},
+      {id:"45",type:"i",name:"جيدا",status:null},
+      {id:"46",type:"i",name:"زوجة هشام",status:null},
+    ]},
+    { id:"sg2-2", title:"رجب بك", entries:[
+      {id:"47",type:"i",name:"مسرة",status:null},
+      {id:"48",type:"i",name:"رفاه",status:null},
+      {id:"49",type:"i",name:"جيهان",status:null},
+      {id:"50",type:"i",name:"زوجة هاشم",status:null},
+      {id:"51",type:"i",name:"زوجة عبد الرحمن",status:null},
+    ]},
+    { id:"sg2-3", title:"أقبيق", entries:[
+      {id:"52",type:"i",name:"هالا",status:null},
+      {id:"53",type:"i",name:"علا",status:null},
+    ]},
+    { id:"sg2-4", title:"طريف", entries:[
+      {id:"54",type:"i",name:"رهف",status:null},
+      {id:"55",type:"i",name:"نورة",status:null},
+      {id:"56",type:"i",name:"زوجة هلال",status:null},
+    ]},
+    { id:"sg2-5", title:"عمة", entries:[
+      {id:"57",type:"i",name:"غادة",status:null},
+      {id:"58",type:"i",name:"شذى",status:null},
+      {id:"59",type:"i",name:"رندة",status:null},
+    ]},
+    { id:"sg2-6", title:"بنت عمة أمل", entries:[
+      {id:"60",type:"i",name:"لبنى",status:null},
+    ]},
+    { id:"sg2-7", title:"جفان", entries:[
+      {id:"61",type:"i",name:"لينا",status:null},
+      {id:"62",type:"i",name:"سحر",status:null},
+    ]},
+    { id:"sg2-8", title:"خورشيد", entries:[
+      {id:"63",type:"i",name:"خورشيد",status:null},
+    ]},
+  ]},
+  { id:"s3", title:"بيت خالة فايزة", subgroups:[
+    { id:"sg3-1", title:"", entries:[
+      {id:"64",type:"g",name:"بيت خالة فايزة",max:3,count:null},
+    ]}
+  ]},
+  { id:"s4", title:"ولاد خالي", subgroups:[
+    { id:"sg4-1", title:"", entries:[
+      {id:"65",type:"g",name:"ولاد خالي",max:3,count:null},
+    ]}
+  ]},
+  { id:"s5", title:"زوجات آدو", subgroups:[
+    { id:"sg5-1", title:"", entries:[
+      {id:"66",type:"i",name:"هنادى",status:null},
+      {id:"67",type:"i",name:"لينا",status:null},
+      {id:"68",type:"i",name:"سمر",status:null},
+      {id:"69",type:"i",name:"لميس",status:null},
+      {id:"70",type:"i",name:"ريم",status:null},
+      {id:"71",type:"i",name:"نهى",status:null},
+    ]}
+  ]},
+  { id:"s6", title:"صديقات المدرسة", subgroups:[
+    { id:"sg6-1", title:"", entries:[
+      {id:"72",type:"i",name:"لينا",status:null},
+      {id:"73",type:"i",name:"نبيلة",status:null},
+      {id:"74",type:"i",name:"سمر",status:null},
+      {id:"75",type:"i",name:"ندى",status:null},
+      {id:"76",type:"i",name:"منى",status:null},
+      {id:"77",type:"i",name:"عائشة",status:null},
+      {id:"78",type:"i",name:"أمل",status:null},
+    ]}
+  ]},
+  { id:"s7", title:"صديقاتي", subgroups:[
+    { id:"sg7-1", title:"", entries:[
+      {id:"79",type:"i",name:"إيمان",status:null},
+      {id:"80",type:"i",name:"فاتن",status:null},
+      {id:"81",type:"i",name:"فايزة",status:null},
+      {id:"82",type:"i",name:"رنا",status:null},
+      {id:"83",type:"i",name:"نهلة",status:null},
+      {id:"84",type:"i",name:"منال",status:null},
+      {id:"85",type:"i",name:"ميادة",status:null},
+      {id:"86",type:"i",name:"ملاذ",status:null},
+    ]}
+  ]},
+  { id:"s8", title:"صديقات العيلة", subgroups:[
+    { id:"sg8-1", title:"", entries:[
+      {id:"87",type:"i",name:"منى دركزلي",status:null},
+      {id:"88",type:"i",name:"مرام كزبري",status:null},
+      {id:"89",type:"i",name:"قناء",status:null},
+      {id:"90",type:"i",name:"ريما",status:null},
+      {id:"91",type:"i",name:"ربى",status:null},
+      {id:"92",type:"i",name:"نورة جفان",status:null},
+      {id:"93",type:"i",name:"ليندا جفان",status:null},
+      {id:"94",type:"i",name:"رنا جفان",status:null},
+    ]}
+  ]},
+  { id:"s9", title:"الموظفات", subgroups:[
+    { id:"sg9-1", title:"", entries:[
+      {id:"95",type:"i",name:"زوجة عامر",status:null},
+      {id:"96",type:"i",name:"هلا",status:null},
+    ]}
+  ]},
+  { id:"s10", title:"الأصيل", subgroups:[
+    { id:"sg10-1", title:"", entries:[
+      {id:"97",type:"i",name:"لمى الأصيل",status:null},
+      {id:"98",type:"i",name:"رنا الأصيل",status:null},
+      {id:"99",type:"i",name:"رزان الأصيل",status:null},
+      {id:"100",type:"i",name:"زوجة معاذ الأصيل",status:null},
+    ]}
+  ]},
+];
+
+function calcStats(sections) {
+  let confirmed=0,declined=0,uncertain=0;
+  sections.forEach(s=>s.subgroups.forEach(sg=>sg.entries.forEach(e=>{
+    if(e.type==='i'){
+      if(e.status==='confirmed')confirmed++;
+      else if(e.status==='declined')declined++;
+      else uncertain++;
+    } else {
+      const m=e.max||1;
+      if(e.count===null)uncertain+=m;
+      else if(e.count===0)declined+=m;
+      else{confirmed+=e.count;uncertain+=(m-e.count);}
+    }
+  })));
+  return{confirmed,declined,uncertain,total:confirmed+declined+uncertain};
+}
+
+function StatusBtn({active,color,activeBg,onClick,label}){
+  const [hover,setHover]=useState(false);
+  return(
+    <button
+      onClick={onClick}
+      onMouseEnter={()=>setHover(true)}
+      onMouseLeave={()=>setHover(false)}
+      style={{
+        width:36,height:36,borderRadius:9,
+        border:active?`2px solid ${color}`:(hover?`1.5px solid ${color}`:'1.5px solid #e8d8c8'),
+        background:active?activeBg:(hover?activeBg+'88':'#faf6f2'),
+        color:active?color:(hover?color:'#c8b0a0'),
+        fontSize:18,fontWeight:900,cursor:'pointer',
+        display:'flex',alignItems:'center',justifyContent:'center',
+        transition:'all 0.15s',
+        transform:active?'scale(1.12)':'scale(1)',
+        flexShrink:0,padding:0,fontFamily:"'Cairo',sans-serif",
+      }}>{label}</button>
+  );
+}
+
+function EntryRow({entry,isEditing,onEdit,onStopEdit,onUpdate}){
+  const [editVal,setEditVal]=useState(entry.name);
+  const inputRef=useRef(null);
+
+  useEffect(()=>{
+    if(isEditing&&inputRef.current){
+      inputRef.current.focus();
+      inputRef.current.select();
+      setEditVal(entry.name);
+    }
+  },[isEditing]);
+
+  const commitEdit=()=>{
+    const v=editVal.trim();
+    if(v)onUpdate({name:v});
+    onStopEdit();
+  };
+
+  const rowBg=
+    entry.type==='i'&&entry.status==='confirmed'?'#f0faf5':
+    entry.type==='i'&&entry.status==='declined'?'#fff6f6':
+    entry.type==='g'&&entry.count>0?'#f3faf6':'#ffffff';
+
+  const dotColor=
+    entry.type==='i'&&entry.status==='confirmed'?'#2d7a4f':
+    entry.type==='i'&&entry.status==='declined'?'#c03838':
+    entry.type==='i'&&entry.status==='uncertain'?'#d4a017':
+    entry.type==='g'&&entry.count>0?'#2d7a4f':
+    entry.type==='g'&&entry.count===0?'#c03838':'#ddd';
+
+  return(
+    <div style={{
+      display:'flex',alignItems:'center',
+      padding:'10px 16px',
+      borderBottom:'1px solid #f5ece2',
+      background:rowBg,
+      gap:10,
+      transition:'background 0.25s',
+    }}>
+      <div style={{
+        width:8,height:8,borderRadius:'50%',flexShrink:0,
+        background:dotColor,transition:'background 0.25s',
+      }}/>
+
+      <div style={{flex:1,minWidth:0}}>
+        {isEditing?(
+          <input
+            ref={inputRef}
+            value={editVal}
+            onChange={e=>setEditVal(e.target.value)}
+            onBlur={commitEdit}
+            onKeyDown={e=>{
+              if(e.key==='Enter')commitEdit();
+              if(e.key==='Escape'){setEditVal(entry.name);onStopEdit();}
+            }}
+            style={{
+              width:'100%',border:'1.5px solid #c49a6c',borderRadius:7,
+              padding:'4px 10px',fontFamily:"'Cairo',sans-serif",
+              fontSize:14,color:'#4a2e22',outline:'none',
+              background:'#fdf6ef',direction:'rtl',boxSizing:'border-box',
+            }}
+          />
+        ):(
+          <span
+            onClick={onEdit}
+            title="اضغطي لتعديل الاسم"
+            style={{
+              fontSize:14,color:'#4a2e22',cursor:'text',
+              display:'block',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',
+              borderBottom:'1px dashed transparent',
+              transition:'border-color 0.2s',
+            }}
+            onMouseEnter={e=>e.currentTarget.style.borderBottomColor='#c49a6c'}
+            onMouseLeave={e=>e.currentTarget.style.borderBottomColor='transparent'}
+          >
+            {entry.name}
+            {entry.type==='g'&&(
+              <span style={{fontSize:11,color:'#a07850',marginRight:6}}>
+                (الأصل: {entry.max})
+              </span>
+            )}
+          </span>
+        )}
+      </div>
+
+      {entry.type==='i'?(
+        <div style={{display:'flex',gap:5,flexShrink:0}}>
+          <StatusBtn active={entry.status==='confirmed'} color="#2d7a4f" activeBg="#e6f6ee"
+            onClick={()=>onUpdate({status:entry.status==='confirmed'?null:'confirmed'})} label="✓"/>
+          <StatusBtn active={entry.status==='declined'}  color="#c03838" activeBg="#fdecea"
+            onClick={()=>onUpdate({status:entry.status==='declined'?null:'declined'})}  label="✗"/>
+          <StatusBtn active={entry.status==='uncertain'} color="#c49a1c" activeBg="#fdf6dd"
+            onClick={()=>onUpdate({status:entry.status==='uncertain'?null:'uncertain'})} label="؟"/>
+        </div>
+      ):(
+        <div style={{display:'flex',alignItems:'center',gap:7,flexShrink:0}}>
+          <span style={{fontSize:12,color:'#9a7060'}}>حاضرات</span>
+          <input
+            type="number" min={0} max={entry.max}
+            value={entry.count===null?'':entry.count}
+            placeholder="—"
+            onChange={e=>{
+              const raw=e.target.value;
+              if(raw===''){onUpdate({count:null});return;}
+              const v=Math.min(entry.max,Math.max(0,parseInt(raw)||0));
+              onUpdate({count:v});
+            }}
+            style={{
+              width:54,textAlign:'center',
+              border:'1.5px solid #c49a6c',borderRadius:9,
+              padding:'6px 4px',fontFamily:"'Cairo',sans-serif",
+              fontSize:16,color:'#2d7a4f',fontWeight:700,
+              background:'#f5faf8',direction:'ltr',outline:'none',
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SectionCard({section,updateEntry}){
+  const [open,setOpen]=useState(true);
+  const [editingId,setEditingId]=useState(null);
+  const stats=calcStats([section]);
+  return(
+    <div style={{
+      background:'#fff',borderRadius:16,marginBottom:14,
+      overflow:'hidden',
+      boxShadow:'0 2px 18px rgba(139,94,82,0.11)',
+      border:'1px solid #f0e0d0',
+    }}>
+      <div
+        onClick={()=>setOpen(p=>!p)}
+        style={{
+          background:'linear-gradient(100deg,#f8ede3 0%,#fdf6ef 100%)',
+          padding:'13px 16px',cursor:'pointer',
+          display:'flex',justifyContent:'space-between',alignItems:'center',
+          borderBottom:open?'1px solid #f0e0d0':'none',
+          userSelect:'none',
+        }}
+      >
+        <div style={{display:'flex',alignItems:'center',gap:8}}>
+          <span style={{fontSize:15,fontWeight:700,color:'#6a3a28'}}>{section.title}</span>
+          <span style={{
+            fontSize:11,color:'#b07a5a',background:'#f5e2d0',
+            padding:'2px 10px',borderRadius:20,fontWeight:600,
+          }}>{stats.total} معزومة</span>
+        </div>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          {stats.confirmed>0&&<span style={{fontSize:12,color:'#2d7a4f',fontWeight:700}}>✓{stats.confirmed}</span>}
+          {stats.declined>0 &&<span style={{fontSize:12,color:'#c03838',fontWeight:700}}>✗{stats.declined}</span>}
+          {stats.uncertain>0&&<span style={{fontSize:12,color:'#b89020',fontWeight:700}}>؟{stats.uncertain}</span>}
+          <span style={{color:'#c49a6c',fontSize:14}}>{open?'▲':'▼'}</span>
+        </div>
+      </div>
+
+      {open&&section.subgroups.map(sg=>(
+        <div key={sg.id}>
+          {sg.title&&(
+            <div style={{
+              padding:'7px 16px 5px',
+              background:'#faf3ee',
+              borderBottom:'1px solid #f5e8de',
+            }}>
+              <span style={{fontSize:12,color:'#9a6848',fontWeight:600}}>— {sg.title}</span>
+            </div>
+          )}
+          {sg.entries.map(entry=>(
+            <EntryRow
+              key={entry.id}
+              entry={entry}
+              isEditing={editingId===entry.id}
+              onEdit={()=>setEditingId(entry.id)}
+              onStopEdit={()=>setEditingId(null)}
+              onUpdate={(patch)=>updateEntry(section.id,sg.id,entry.id,patch)}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function App(){
+  const [data,setData]=useState(()=>{
+    try{
+      const saved=localStorage.getItem(STORAGE_KEY);
+      return saved?JSON.parse(saved):INITIAL_DATA;
+    }catch{return INITIAL_DATA;}
+  });
+  const [flash,setFlash]=useState(false);
+  const saveRef=useRef(null);
+
+  const scheduleSave=useCallback((newData)=>{
+    clearTimeout(saveRef.current);
+    saveRef.current=setTimeout(()=>{
+      try{
+        localStorage.setItem(STORAGE_KEY,JSON.stringify(newData));
+        setFlash(true);
+        setTimeout(()=>setFlash(false),1200);
+      }catch{}
+    },600);
+  },[]);
+
+  const updateEntry=useCallback((sId,sgId,eId,patch)=>{
+    setData(prev=>{
+      const next=prev.map(s=>s.id!==sId?s:{
+        ...s,subgroups:s.subgroups.map(sg=>sg.id!==sgId?sg:{
+          ...sg,entries:sg.entries.map(e=>e.id!==eId?e:{...e,...patch})
+        })
+      });
+      scheduleSave(next);
+      return next;
+    });
+  },[scheduleSave]);
+
+  const stats=calcStats(data);
+
+  return(
+    <div style={{fontFamily:"'Cairo',sans-serif",background:'#fdf6ef',minHeight:'100vh',paddingBottom:70}}>
+
+      {/* Sticky header */}
+      <div style={{
+        position:'sticky',top:0,zIndex:100,
+        background:'linear-gradient(135deg,#7a4030 0%,#c49a6c 100%)',
+        boxShadow:'0 4px 24px rgba(120,60,40,0.30)',
+        padding:'16px 16px 14px',
+      }}>
+        <div style={{maxWidth:660,margin:'0 auto'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+            <h1 style={{color:'#fff',fontSize:18,fontWeight:900,letterSpacing:0.5}}>
+              💐 قائمة معازيم العرس
+            </h1>
+            <span style={{
+              fontSize:11,
+              color:flash?'#a8f0c8':'rgba(255,255,255,0.55)',
+              transition:'color 0.4s',
+              fontWeight:flash?700:400,
+            }}>
+              {flash?'✓ تم الحفظ':'محفوظ تلقائياً'}
+            </span>
+          </div>
+
+          {/* Stats */}
+          <div style={{display:'flex',gap:8,marginTop:12,flexWrap:'wrap',justifyContent:'center'}}>
+            {[
+              {count:stats.confirmed,label:'مؤكدات', emoji:'✓',color:'#6eeaa0',bg:'rgba(46,160,90,0.22)'},
+              {count:stats.declined, label:'اعتذرن', emoji:'✗',color:'#ff9898',bg:'rgba(200,50,50,0.22)'},
+              {count:stats.uncertain,label:'غير مؤكد',emoji:'؟',color:'#ffe580',bg:'rgba(200,160,0,0.22)'},
+              {count:stats.total,    label:'الإجمالي',emoji:'👥',color:'#fff',  bg:'rgba(255,255,255,0.15)'},
+            ].map(s=>(
+              <div key={s.label} style={{
+                background:s.bg,borderRadius:22,
+                padding:'6px 14px',
+                display:'flex',alignItems:'center',gap:6,
+              }}>
+                <span style={{color:s.color,fontSize:14,fontWeight:700}}>{s.emoji} {s.count}</span>
+                <span style={{color:'rgba(255,255,255,0.75)',fontSize:12}}>{s.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Tip bar */}
+      <div style={{maxWidth:660,margin:'14px auto 0',padding:'0 12px'}}>
+        <div style={{
+          background:'#fef9f4',border:'1px dashed #d4b090',
+          borderRadius:10,padding:'10px 15px',
+          fontSize:12,color:'#8a5e40',lineHeight:1.9,
+        }}>
+          <b>طريقة الاستخدام:</b> اضغطي ✓ للمؤكد · ✗ للاعتذار · ؟ غير مؤكد · اضغطي مجدداً لإلغاء التحديد
+          <br/>
+          للمجموعات: أدخلي عدد الحاضرات في الحقل · لتعديل أي اسم: اضغطي عليه · البيانات تُحفظ تلقائياً في المتصفح
+        </div>
+      </div>
+
+      {/* List */}
+      <div style={{maxWidth:660,margin:'12px auto 0',padding:'0 12px'}}>
+        {data.map(section=>(
+          <SectionCard
+            key={section.id}
+            section={section}
+            updateEntry={updateEntry}
+          />
+        ))}
+      </div>
+
+      {/* Footer */}
+      <div style={{textAlign:'center',marginTop:30,fontSize:12,color:'#c0a090'}}>
+        sawahub.com · قائمة المعازيم
+      </div>
+    </div>
+  );
+}
+
+const root=ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App/>);
+</script>
+</body>
+</html>
